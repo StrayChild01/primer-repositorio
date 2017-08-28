@@ -1,0 +1,71 @@
+---
+title: "Ejercicio con ENIGH - I parte"
+output: html_document
+---
+## Instalación de librerías
+Las librerías son útiles para realizar funciones especiales. La especialización de paquetes es más rápida en R que en otros programas por ser un software libre. 
+
+Vamos a instalar el paquete "foreign", como su nombre lo indica, nos permite leer elementos "extranjeros" en R. Es sumamente útil porque nos permite leer casi todos los formatos, sin necesidad de usar paquetes especializados como StatTransfer.
+
+Para instalar las paqueterías usamos el siguiente comando "install.packages()"
+Checa que adentro del paréntesis va el nombre de la librería, con comillas. Si estamos trabajando en la computadora no es necesario poner la opción repos = "http://cran.us.r-project.org"."
+
+Con la opción "dependencies = TRUE" R nos instalará no sólo la librería o paquete que estamos pidiendo, sino todo aquellos paquetes que necesite la librería en cuestión. Muchas veces los diseños de los paquetes implican el uso de algún otro anterior. Por lo que poner esta sentencia nos puede ahorrar errores cuando estemos usando el paquete. 
+```{r}
+install.packages("foreign", repos = "http://cran.us.r-project.org", dependencies = TRUE)
+```
+Este proceso no hay que hacerlo siempre. Si no sólo la primera vez. Una vez instalado un paquete de librería, la llamamos con el comando "library"
+
+```{r}
+library(foreign)
+```
+Ahora ya tenemos nuestra librería y la podemos usar. Para que sea más sencillo vamos a establecer dónde tenemos nuestro directorio. Esto se hace con el comando setwd, de set work directory
+```{r}
+setwd("/Users/anaescoto/Dropbox/DGAPA/EjercicioR")
+```
+
+## Leer base de datos y revisar su contenido
+Hoy vamos  llamar el archivo. Este archivo es justo como se puede descargar desde Inegi. Inegi tiene muchos formatos de publicación. No obstante, el que es común a todos es el dbf. Al objeto enigh_concentrado se le asignará lo que leemos de archivo dbf.
+La base se puede descargar desde <a href="https://www.dropbox.com/s/bi329e4ie2y7i6f/ncv_concentrado_2014_concil_2010_dbf.dbf?dl=0">aquí</a>
+
+```{r}
+enigh_concentrado <- read.dbf("ncv_concentrado_2014_concil_2010_dbf.dbf")
+```
+Vamos a ver nuestra base de datos. Esto es como la "vista de datos" de SPSS o bien lo que veríamos con el "browse" en STATA
+```{r}
+#View(enigh_concentrado)
+```
+También con "head, vemos las primeras 6 líneas de la base de datos
+```{r}
+head(enigh_concentrado)
+```
+También con "tail", vemos las últimas 6 líneas de la base de datos
+```{r}
+tail(enigh_concentrado)
+```
+Ver los nombres de las variables
+```{r}
+names(enigh_concentrado)
+```
+
+Revisar la estructura de la base de datos
+```{r}
+str(enigh_concentrado)
+```
+Si queremos ver los niveles de una variable, tenemos que usar el formato basedatos$var. Esto nos llevará a la variable dentro del objeto que tenemos que es una base de datos. Esto nos permite tener varias bases de datos cargadas en un mismo ambiente.
+```{r}
+levels(enigh_concentrado$sexo_jefe)
+```
+También podemos pedir una tabla de una variable. 
+```{r}
+table(enigh_concentrado$sexo_jefe)
+table(enigh_concentrado$edad)
+```
+Para ver las dimensiones de cualquier objeto, en este caso nos dirá el número de observaciones y variables
+```{r}
+dim(enigh_concentrado)
+```
+Si queremos saber el tipo o clase de un objeto (numeric, matrix, data frame, etc)
+```{r}
+class(enigh_concentrado)
+```
