@@ -1,0 +1,190 @@
+---
+title: "Dataframes y gráficos"
+author: "AE"
+date: "26/6/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Matrices vrs. Data Frames
+
+#Matrices
+Anteriormente, aprendimos a instalar paquetes y a importar bases de datos. Las matrices por lo general sólo almacenan un tipo de datos mientras que las data frames puede almacenar varios tipos de datos.
+
+```{r}
+m <-matrix(1:20, ncol=2)
+m
+```
+En general, los datos de una matriz son numéricos. R es muy potente para hacer operaciones con matrices. 
+
+Para poder llegar a ver los elementos individuales de una matriz, tenemos que usar los corchetes y revisar por ejemplo el elemento 5 de la columna 1
+```{r}
+m[5,1] 
+m[5,2]
+m[, 1] # si queremos todas las filas, no ponemos nada
+m[1, ] # si queremos todas las columnas no ponemos nada
+
+m[1:2,]
+m[c(1,5, 6),]
+n<-m[1,]
+
+class(m)
+class(n)
+```
+Estos resultados se pueden asignar también a nuevos objetos, lo cual es muy útil cuando estemos filtrando caso.
+
+
+#Dataframes
+Vamos a instalar la librería "MASS" que nos da acceso a un grupo amplio de bases de datos que nos ayudaran a revisar y analizar algunas técnicas sencillas. 
+
+```{r}
+install.packages("MASS", repos = "http://cran.us.r-project.org", dependencies = TRUE)
+library(MASS)
+```
+
+Vamos a llamar a la base "painters" que contiene información sobre pintores del siglo XVIII
+
+```{r}
+data()
+data(painters)
+class(painters)
+```
+Para revisar el contenido de un data frame podemos usar, como lo hicimos en el ejercicio de la ENIGH, el formado basededatos$var o usar corchete, checa como estas tres formas tan el mismo resultado
+```{r}
+painters$School
+painters[["School"]]  # ¡Ojo con las comillas! 
+painters[,5]  
+```
+Vamos a pedir cosas más especificas y podemos seleccionar observaciones o files
+```{r}
+painters[painters$School=="A",]
+painters[(painters$School=="A" & painters$Composition>10 ),]
+subset1<- painters[(painters$School=="A" & painters$Composition>10 ),]
+```
+
+También podemos seleccionar columnas
+```{r}
+painters[, c("Colour", "Expression")]
+subset2<- painters[, c("Colour", "Expression")]
+```
+
+podemos combinar los dos tipos de selección
+```{r}
+painters[painters$School=="A", c("Colour", "Expression")]
+subset4<- painters[, c("Colour", "Expression")]
+```
+Vamos a revisar cuántos pintores estudiaron en cada escuela. Si recuerdas, eso se puede hacer con el comando table. Como estamos trabajando
+```{r}
+table(painters$School)
+```
+
+Este resultado lo podemos asignar a un objeto nuevo
+
+```{r}
+freq.school<-table(painters$School)
+```
+
+El tenerlo como un objeto nos sirve sobre todo porque podemos aplicarle funciones a esta tabla de frecuencias, las funciones m´ás importantes que podemos aplicar son las gráficas
+```{r}
+plot(freq.school) # el gráfico más sencillo 
+
+barplot(freq.school) # gráficos de barra
+pie(freq.school) # gráfico de pastel
+
+```
+
+Vamos a modificar ligeramente los colores
+
+```{r}
+
+barplot(freq.school, col=gray(0:8/8)) # gráficos de barra con escala de grises de oscuro a claros, (8 categorías)
+barplot(freq.school, col=gray(8:0/8)) # gráficos de barra con escala de grises de claro a oscuros
+
+barplot(freq.school, col=rainbow(8)) # gráfico de barras () ponemos el número de categorías
+barplot(freq.school, col=heat.colors(8)) # gráfico de barras () ponemos el número de categorías
+
+```
+
+También podemos hacer nuestro propio vector de colores, para la paleta de nombres de colores que usa R, revisar http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf
+
+```{r}
+my_colors1<-c("lightblue","lightblue1", "lightblue2", "lightblue3", "lightblue4", "lightcyan4", "lightcyan3", "lightcyan2")
+
+my_colors2<-c("mediumorchid","mediumorchid1", "mediumorchid2", "mediumorchid3", "mediumorchid4", "mediumpurple4", "mediumpurple3", "mediumpurple2")
+
+barplot(freq.school, col=my_colors1) # gráficos de barra con colores personalizados 1
+barplot(freq.school, col=my_colors2) # gráficos de barra con colores personalizados 2
+
+```
+
+Para poner título 
+```{r}
+barplot(freq.school, col=gray.colors(8)) 
+title(main = list("Escuelas de pintores", font = 4))
+
+# border :
+barplot(freq.school, border = "dark blue", col=my_colors2,  legend = rownames(freq.school))
+
+
+```
+
+Para hacer las barras horizontales le ponemos la opción "horiz=TRUE"
+```{r}
+barplot(freq.school, border = "dark blue", col=my_colors2,  legend = rownames(freq.school), horiz=TRUE )
+
+```
+
+
+#Gráficos bivariados
+Igual hacemos un objeto con las frecuencias de una tabla, pero en este caso será una tabla bivariada.
+Vamos a cargar otra base de datos. Nuestra base de pintores sólo tenía una sóla variable categórica.
+
+```{r}
+data()
+data("Cars93")
+freq.cars<-table(Cars93$AirBags, Cars93$Type)
+freq.cars
+
+```
+
+Con este objeto vamos a graficar. 
+
+Para <b>barras apiladas</b>
+```{r}
+barplot(freq.cars, main="Carros según bolsas de aire y tipo",
+                   col=heat.colors(3),
+ 	                  legend = rownames(freq.cars))
+```
+
+Para <b>barras agrupadas</b>
+Para estos gráficos usamos el mismo código, pero le activamos la opción "beside"
+
+```{r}
+barplot(freq.cars, main="Carros según bolsas de aire y tipo",
+                   col=heat.colors(3),
+ 	                 legend = rownames(freq.cars),
+                   beside=TRUE )
+```
+
+Para las barras apiladas es útil que lo veamos en términos de proporciones. 
+
+Para eso usabmos "prop.table"
+la opción 1, es para que nos dé las proporciones por fila
+la opción 2, es para que nos dé las proporciones por columna
+Sin opción, da la proporción para el total de observaciones
+
+```{r}
+prop.cars<-prop.table(freq.cars,2)
+prop.cars
+
+```
+
+```{r}
+barplot(prop.cars, main="Carros según bolsas de aire y tipo",
+                   col=heat.colors(3),
+ 	                  legend = rownames(prop.cars))
+```
+
